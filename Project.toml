@@ -1,7 +1,7 @@
 name = "DemoInertiaPreprocess"
 uuid = "ec49cb16-2c8f-4e2a-bcf7-d6761e85d5de"
 authors = ["Krishna Bhogaonker"]
-version = "1.0.1-DEV"
+version = "1.0.2-DEV"
 
 [deps]
 CSV = "336ed68f-0bac-5ca0-87d4-7b16caf5d00b"
