@@ -74,7 +74,8 @@ end
 
 
 function _extract_unique_department_prof_names_from_new_um_data(tdf::DataFrame; to_csv=true, 
-            valid_jobs_list=["professor", "assoc professor", "asst professor"])
+            include_list=["professor", "assoc professor", "asst professor"], 
+            exclude_list=[])
     
     logger = TeeLogger(
             ConsoleLogger(stderr),
@@ -107,9 +108,13 @@ function _extract_unique_department_prof_names_from_new_um_data(tdf::DataFrame; 
     replace!(tdf.jobdesc, missing => "")
     @debug("produced unique name and department combos")
 
-    tdf = filter(:jobdesc => n -> any(occursin.(valid_jobs_list, n)), tdf)
-    @debug("filtered the data \n $(first(tdf, 5))")
-
+    tdf = filter(:jobdesc => n -> any(occursin.(include_list, n)), tdf)
+    @debug("filtered to include data on the include list.")
+    
+    tdf = filter(:jobdesc => n -> !any(occursin.(exclude_list, n)), tdf)
+    @debug("filtered out data on the exlude list.")
+    
+    tdf = sort(tdf, [:campus, :orgname, :jobdesc])
     if to_csv    
         CSV.write("unique_name_depts.csv", tdf)
         @debug("wrote file to directory.")
@@ -121,13 +126,14 @@ end
 
 
 function _extract_unique_department_prof_names_from_new_um_data(fname::String; to_csv=true, 
-            valid_jobs_list=["professor", "assoc professor", "asst professor"])
+            include_list=["professor", "assoc professor", "asst professor"],
+            exclude_list=[])
 
 
     tdf = DataFrame(CSV.File(fname))
 
     res = _extract_unique_department_prof_names_from_new_um_data(tdf; to_csv=to_csv, 
-            valid_jobs_list=valid_jobs_list)    
+            include_list=include_list, exclude_list=exclude_list)    
 
     return res
     
