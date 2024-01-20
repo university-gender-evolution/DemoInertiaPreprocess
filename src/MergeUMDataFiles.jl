@@ -73,7 +73,9 @@ function merge_new_um_data_into_single_file(filepath::String, newfilename::Strin
 end
 
 
-function _extract_unique_department_prof_names_from_new_um_data(fname::String; to_csv=true)
+function _extract_unique_department_prof_names_from_new_um_data(tdf::DataFrame; to_csv=true, 
+            valid_jobs_list=["professor", "assoc professor", "asst professor"])
+    
     logger = TeeLogger(
             ConsoleLogger(stderr),
             FormatLogger(open("logfile_unique_names.txt", "w")) do io, args
@@ -84,7 +86,6 @@ function _extract_unique_department_prof_names_from_new_um_data(fname::String; t
     global_logger(logger)
     # First sort the dataframe by name. I am really trying to remove the same names.
 
-    tdf = DataFrame(CSV.File(fname))
 
     @debug("loaded the file to dataframe")
     
@@ -99,8 +100,6 @@ function _extract_unique_department_prof_names_from_new_um_data(fname::String; t
     # Next I have to extract only professors. I don't want to look at names that  
     # are not professors. I will probably need to tune this. I can search for 
     # just professors and such. 
-
-    valid_jobs_list = ["professor", "assoc professor", "asst professor"]
 
     tdf = transform(tdf, :jobdesc => ByRow(passmissing(lowercase)) => :jobdesc)
     @debug("lowercased all of the job descriptions.")
@@ -118,4 +117,18 @@ function _extract_unique_department_prof_names_from_new_um_data(fname::String; t
     end
 
     return tdf
+end
+
+
+function _extract_unique_department_prof_names_from_new_um_data(fname::String; to_csv=true, 
+            valid_jobs_list=["professor", "assoc professor", "asst professor"])
+
+
+    tdf = DataFrame(CSV.File(fname))
+
+    res = _extract_unique_department_prof_names_from_new_um_data(tdf; to_csv=to_csv, 
+            valid_jobs_list=valid_jobs_list)    
+
+    return res
+    
 end
