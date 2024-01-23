@@ -8,13 +8,14 @@ using StatFiles
 using Pipe, StatsBase, Chain
 using DataFramesMeta
 using Logging, LoggingExtras
+using Dates
 
 
+include("MergeNewUMDataFiles.jl")
+include("ValidateOldUMDataFiles.jl")
 
-include("MergeUMDataFiles.jl")
-
-
-export merge_new_um_data_into_single_file
+export merge_new_um_data_into_single_file, 
+        extract_unique_department_prof_names_from_old_um_data
 
 
 
