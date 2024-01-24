@@ -5,7 +5,7 @@
 
 
 
-function extract_unique_department_prof_names_from_original_um_data(file_name::String; to_csv=true, 
+function extract_unique_department_prof_names_from_original_um_data(tdf::DataFrame; to_csv=true, 
             include_list=["professor", "assoc professor", "asst professor"], 
             exclude_list=[])
             
@@ -19,17 +19,9 @@ function extract_unique_department_prof_names_from_original_um_data(file_name::S
     
     global_logger(logger)
 
-    if ispath(file_name)
-        @debug("file path is valid.")
-    else
-        throw(ArgumentError("The directory path provided was not a valid path. Please correct the path and try again."))
-    end
 
     @debug("loaded the file to dataframe")
     
-    tdf = DataFrame(StatFiles.load(file_name))
-
-    disallowmissing!(tdf, error=false)
 
     @debug("column names are: $(names(tdf))")
 
@@ -60,3 +52,25 @@ function extract_unique_department_prof_names_from_original_um_data(file_name::S
     return tdf
 
 end;
+
+
+
+function extract_unique_department_prof_names_from_original_um_data(file_name::String; to_csv=true, 
+    include_list=["professor", "assoc professor", "asst professor"], 
+    exclude_list=[])
+
+    if ispath(file_name)
+        @debug("file path is valid.")
+    else
+        throw(ArgumentError("The directory path provided was not a valid path. Please correct the path and try again."))
+    end
+
+    tdf = DataFrame(StatFiles.load(file_name))
+
+    disallowmissing!(tdf, error=false)
+
+    res = extract_unique_department_prof_names_from_original_um_data(tdf; to_csv=to_csv, 
+            include_list=include_list, exclude_list=exclude_list )
+    
+    return res
+end
