@@ -5,15 +5,14 @@
 
 
 
-function extract_unique_department_prof_names_from_old_um_data(file_name::String; to_csv=true, 
+function extract_unique_department_prof_names_from_original_um_data(file_name::String; to_csv=true, 
             include_list=["professor", "assoc professor", "asst professor"], 
             exclude_list=[])
             
     
-    
     logger = TeeLogger(
             ConsoleLogger(stderr),
-            FormatLogger(open("logfile_unique_names.txt", "w")) do io, args
+            FormatLogger(open("logfile_original_um_dept_jobdesc.txt", "w")) do io, args
             # Write the module, level and message only
                 println(io, args._module, " | ", "[", args.level, "] ", args.message)
             end )
@@ -51,22 +50,13 @@ function extract_unique_department_prof_names_from_old_um_data(file_name::String
     tdf = filter(:jobdes => n -> !any(occursin.(exclude_list, n)), tdf)
     @debug("filtered out data on the exlude list.")
     
-    tdf = sort(tdf, [:campus, :orgname, :jobdes])
+    tdf = sort(tdf, [:orgname, :jobdes])
     if to_csv    
-        CSV.write("unique_name_depts.csv", tdf)
+        CSV.write("original_um_unique_depts_professors.csv", tdf)
         @debug("wrote file to directory.")
         @debug("closing log.")
     end
 
     return tdf
 
-
-
-
-
-
-
-
-    
-    return d
 end;
